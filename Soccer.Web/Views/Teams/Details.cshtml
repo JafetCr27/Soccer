@@ -1,30 +1,37 @@
 ﻿@model Soccer.Web.Data.Entities.Team
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalle";
 }
+<div class="panel-body">
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model.Id"><span class="glyphicon glyphicon-edit"></span></a> 
+            <a class="btn btn-danger" asp-action="Index"><span class="glyphicon glyphicon-arrow-left"></span></a>
+        </div>
+    </div>
+    <h3 class="text-primary"> Detalle</h3>
+    <hr/>
+    <div class="row">
+        <div class="col-sm-4">
+            <img alt=""/>
+        </div>
+        <div class="col-sm-4">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Nombre)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.LogoPath)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LogoPath)
+                </dd>
+            </dl>
+        </div>
+    </div>
 
-<h2>Details</h2>
-
-<div>
-    <h4>Team</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.LogoPath)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.LogoPath)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
 </div>

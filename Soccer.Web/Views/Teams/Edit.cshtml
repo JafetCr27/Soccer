@@ -1,37 +1,37 @@
-﻿@model Soccer.Web.Data.Entities.Team
-
+﻿@model Soccer.Web.Models.TeamViewModel
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar";
 }
 
-<h2>Edit</h2>
-
-<h4>Team</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LogoPath" class="control-label"></label>
-                <input asp-for="LogoPath" class="form-control" />
-                <span asp-validation-for="LogoPath" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </form>
+<div class="panel-body">
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-primary" asp-action="Index"><span class="glyphicon glyphicon-refresh"></span></a>
+            <a class="btn btn-danger" asp-action="Index"><span class="glyphicon glyphicon-arrow-left"></span></a>
+        </div>
     </div>
-</div>
+    <h4 class="text-primary">Editar equipo</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <img alt="Image" class="img-responsive" src="@Url.Content(Model.LogoPath)" />
+        </div>
+        <div class="col-md-4">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="LogoPath" />
+                <partial name="_Team" />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <span class="glyphicon glyphicon-edit"></span> Editar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+
 </div>
 
 @section Scripts {

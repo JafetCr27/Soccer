@@ -1,31 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Soccer.Web.Data;
-using Soccer.Web.Data.Entities;
+﻿
+using Soccer.Web.Helpers;
+using Soccer.Web.Models;
 
 namespace Soccer.Web.Controllers
 {
+    using Data;
+    using Data.Entities;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class TeamsController : Controller
     {
         private readonly DataContext _context;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
-        public TeamsController(DataContext context)
+        public TeamsController(DataContext context,
+                                IImageHelper imageHelper,
+                                IConverterHelper converterHelper)
         {
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
             _context = context;
+
         }
 
-        // GET: Teams
         public async Task<IActionResult> Index()
         {
             return View(await _context.Teams.ToListAsync());
         }
-
-        // GET: Teams/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,77 +49,83 @@ namespace Soccer.Web.Controllers
             return View(team);
         }
 
-        // GET: Teams/Create
         public IActionResult Create()
         {
             return View();
         }
-
-        // POST: Teams/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,LogoPath")] Team team)
+        public async Task<IActionResult> Create(TeamViewModel team)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(team);
+            try
             {
-                _context.Add(team);
+                var path = string.Empty;
+                if (team.LogoFile != null)
+                {
+                    path = await _imageHelper.UploadImageAsync(team.LogoFile, "Teams");
+                }
+                var teamEntity = _converterHelper.ToTeam(team, path, true);
+                _context.Add(teamEntity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            catch (Exception e)
+            {
+                if (e.InnerException != null && e.InnerException.Message.Contains("duplicate"))
+                {
+                    ModelState.AddModelError(string.Empty, "No se puede el equipo " + team.Nombre + " verifique que el registro no se encuentre duplicado");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, e.Message);
+                }
+            }
             return View(team);
         }
-
-        // GET: Teams/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
             var team = await _context.Teams.FindAsync(id);
             if (team == null)
             {
                 return NotFound();
             }
-            return View(team);
+            var teamViewModel = _converterHelper.ToTeamViewModel(team);
+            return View(teamViewModel);
         }
-
-        // POST: Teams/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,LogoPath")] Team team)
+        public async Task<IActionResult> Edit(int id, TeamViewModel teamViewModel)
         {
-            if (id != team.Id)
+            if (id != teamViewModel.Id)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(teamViewModel);
+            var path = teamViewModel.LogoPath;
+            if (teamViewModel.LogoFile != null)
             {
-                try
-                {
-                    _context.Update(team);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TeamExists(team.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                path = await _imageHelper.UploadImageAsync(teamViewModel.LogoFile, "Teams");
+            }
+            var teamEntity = _converterHelper.ToTeam(teamViewModel, path, false);
+            _context.Update(teamEntity);
+            try
+            {
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(team);
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty,
+                    e.InnerException != null && e.InnerException.Message.Contains("duplicate")
+                        ? $"No se puede registrar el equipo: {teamViewModel.Nombre} verifique que el registro no se encuentre duplicado"
+                        : e.Message);
+            }
+            return View(teamViewModel);
         }
 
         // GET: Teams/Delete/5

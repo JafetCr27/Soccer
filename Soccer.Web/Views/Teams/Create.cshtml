@@ -1,36 +1,33 @@
-﻿@model Soccer.Web.Data.Entities.Team
+﻿@model Soccer.Web.Models.TeamViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h2>Create</h2>
 
-<h4>Team</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LogoPath" class="control-label"></label>
-                <input asp-for="LogoPath" class="form-control" />
-                <span asp-validation-for="LogoPath" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </form>
+<div class="panel-body">
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-primary" asp-action="Index"><span class="glyphicon glyphicon-refresh"></span></a>
+            <a class="btn btn-danger" asp-action="Index"><span class="glyphicon glyphicon-arrow-left"></span></a>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+    <h3 class="text-primary">Nuevo equipo</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <partial name="_Team"/>
+                <div class="form-group">
+                    <button type="submit" value="Create" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Crear equipo
+                    </button> 
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

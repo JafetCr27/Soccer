@@ -4,38 +4,82 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<div class="panel-body">
+    <h3 class="text-primary">Lista de Equipos</h3>
+    <hr />
+    <div class="row">
+        <div class="col-sm-12">
+            <a class="btn btn-primary flotar" asp-action="Create">
+                <span class="glyphicon glyphicon-plus"></span>
+                Nuevo equipo
+            </a>
+        </div>   
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table id="tableEquipos" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Nombre)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LogoPath)
+                        </th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Nombre)
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.LogoPath))
+                                {
+                                    <img alt="Image" src="@Url.Content(item.LogoPath)" style="width: 100px; max-width: 100%" />
+                                }
+                            </td>
+                            <td>
+                                <a class="btn btn-warning flotar" asp-action="Edit" asp-route-id="@item.Id">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                    Editar
+                                </a>
+                                <a class="btn btn-info flotar" asp-action="Details" asp-route-id="@item.Id">
+                                    <span class="glyphicon glyphicon-list"></span> Detalle
+                                </a>
+                                <button data-id="@item.Id" class="btn btn-danger flotar deleteItem" data-toggle="modal" data-target="#deleteDialog">
+                                    <span class="glyphicon glyphicon-trash"></span> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_DeleteDialog"/>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LogoPath)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LogoPath)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            CrearDataTable("tableEquipos");
+            var itemToDelete;
+            $(".deleteItem").click((e) => {
+                itemToDelete = e.currentTarget.dataset.id;
+            });
+            $("#btnYesDelete").click(() => {
+                window.location.href = '/Teams/Delete/'+itemToDelete;
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>
